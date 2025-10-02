@@ -52,6 +52,19 @@ func updateTodo(c *gin.Context) {
 	c.JSON(http.StatusNotFound, gin.H{"error": "todo not found"})
 }
 
+func delete(c *gin.Context) {
+	id_param := c.Param("id")
+	id, _ := strconv.Atoi(id_param)
+	for i, todo := range lists {
+		if todo.ID == id {
+			lists = append(lists[:i], lists[i+1:]...)
+			c.JSON(http.StatusOK, gin.H{"message": "todo deleted"})
+			return
+		}
+	}
+	c.JSON(http.StatusNotFound, gin.H{"error": "todo not found"})
+}
+
 func main() {
 	r := gin.Default()
 	api := r.Group("/api")
@@ -59,7 +72,7 @@ func main() {
 		api.GET("/lists", getTodo)
 		api.POST("/lists", creatTodo)
 		api.PATCH("/update/:id", updateTodo)
-
+		api.DELETE("/tasks/:id", delete)
 	}
 	r.Run("localhost:8080")
 }
